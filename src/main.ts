@@ -128,6 +128,7 @@ client.on(Events.MessageUpdate, async (oldMessage, newMessage) => {
 		await syncedMessageSource.sent.edit(newMessage.content);
 	}
 
+	if (syncedMessages.length === 0) return;
 	await newMessage.reply(
 		`Updated synced message to ${syncedMessages.length} users: \`\`\`${newMessage.content}\`\`\``,
 	);
