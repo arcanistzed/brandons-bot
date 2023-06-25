@@ -1,0 +1,27 @@
+{
+	"name": "brandons-bot",
+	"version": "1.0.0",
+	"description": "A discord bot for syncing messages to DMS",
+	"main": "src/main.ts",
+	"scripts": {
+		"start": "node ./dist/main.js",
+		"dev": "nodemon ./src/main.ts",
+		"build": "tsc",
+		"lint": "eslint . --ext .js,.ts",
+		"prettier": "prettier --write ."
+	},
+	"author": "Daniel Thorp",
+	"license": "MIT",
+	"dependencies": {
+		"discord.js": "^14.11.0",
+		"dotenv": "^16.3.1"
+	},
+	"devDependencies": {
+		"eslint": "^8.43.0",
+		"eslint-config-arcanist": "^1.5.3",
+		"nodemon": "^2.0.22",
+		"prettier": "^2.8.8",
+		"ts-node": "^10.9.1",
+		"typescript": "^5.1.3"
+	}
+}
