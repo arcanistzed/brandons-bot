@@ -27,7 +27,7 @@ client.on(Events.ClientReady, async () => {
 });
 
 // Create slash command
-const command = new SlashCommandBuilder()
+let command = new SlashCommandBuilder()
 	.setName("sync")
 	.setDescription("Sync a message to a user's DMs")
 	.addStringOption(option =>
@@ -35,158 +35,38 @@ const command = new SlashCommandBuilder()
 			.setName("message")
 			.setDescription("The message ID to sync")
 			.setRequired(true),
-	)
-	// Multiple users
-	.addUserOption(option =>
-		option
-			.setName("user")
-			.setDescription("The users to sync the message to")
-			.setRequired(true),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user1")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user2")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user3")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user4")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user5")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user6")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user7")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user8")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user9")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user10")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user11")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user12")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user13")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user14")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user15")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user16")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user17")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user18")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
-	)
-	.addUserOption(option =>
-		option
-			.setName("user19")
-			.setDescription("Additional users to sync the message to")
-			.setRequired(false),
 	);
+
+for (let i = 0; i < 20; i++) {
+	command = command.addUserOption(option =>
+		option
+			.setName(`user${i}`)
+			.setDescription(`User #${i + 1} to sync the message to`)
+			.setRequired(i === 0),
+	);
+}
 
 // Handle slash command
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isCommand()) return;
 
 	if (interaction.commandName === command.name) {
-		const users = [
-			interaction.options.getUser("user", true),
-			interaction.options.getUser("user1", false),
-			interaction.options.getUser("user2", false),
-			interaction.options.getUser("user3", false),
-			interaction.options.getUser("user4", false),
-			interaction.options.getUser("user5", false),
-			interaction.options.getUser("user6", false),
-			interaction.options.getUser("user7", false),
-			interaction.options.getUser("user8", false),
-			interaction.options.getUser("user9", false),
-			interaction.options.getUser("user10", false),
-			interaction.options.getUser("user11", false),
-			interaction.options.getUser("user12", false),
-			interaction.options.getUser("user13", false),
-			interaction.options.getUser("user14", false),
-			interaction.options.getUser("user15", false),
-			interaction.options.getUser("user16", false),
-			interaction.options.getUser("user17", false),
-			interaction.options.getUser("user18", false),
-			interaction.options.getUser("user19", false),
-		].filter((user): user is User => !!user);
+		const users = new Array(20)
+			.fill(null)
+			.map((_, i) => {
+				const option = interaction.options.get(`user${i}`, false);
+				if (!option) return null;
+
+				const user = option.user;
+				if (!user) return null;
+
+				return user;
+			})
+			.filter((u): u is User => !!u);
+
 		const messageId = interaction.options.get("message", true)
 			.value as string;
+
 		console.info(`Syncing message ${messageId} to users ${users}`);
 
 		const source = await interaction.channel?.messages.fetch(messageId);
@@ -195,7 +75,7 @@ client.on(Events.InteractionCreate, async interaction => {
 			return;
 		}
 
-		for (const user of users.values()) {
+		for (const user of users) {
 			const dmChannel = await user.createDM();
 			const sent = await dmChannel.send(source.content);
 
