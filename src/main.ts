@@ -12,6 +12,8 @@ import { REST, Routes } from "discord.js";
 dotenv.config();
 if (!process.env.TOKEN) throw new Error("No token provided");
 
+const MAX_USER_COUNT = 34;
+
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -37,7 +39,7 @@ let command = new SlashCommandBuilder()
 			.setRequired(true),
 	);
 
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < MAX_USER_COUNT; i++) {
 	command = command.addUserOption(option =>
 		option
 			.setName(`user${i}`)
@@ -51,7 +53,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isCommand()) return;
 
 	if (interaction.commandName === command.name) {
-		const users = new Array(20)
+		const users = new Array(MAX_USER_COUNT)
 			.fill(null)
 			.map((_, i) => {
 				const option = interaction.options.get(`user${i}`, false);
