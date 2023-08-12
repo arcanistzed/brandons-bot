@@ -77,9 +77,23 @@ client.on(Events.InteractionCreate, async interaction => {
 		)
 			.map(mention => mention.replace(/[<@!>]/g, ""))
 			// Fetch the users from the cache
-			.map(id => client.users.cache.get(id))
+			.map(id => {
+				try {
+					return client.users.cache.get(id);
+				} catch (error) {
+					return undefined;
+				}
+			})
 			// Filter out any users that couldn't be found
 			.filter((u): u is User => !!u);
+
+		if (users.length === 0) {
+			await interaction.reply({
+				ephemeral: true,
+				content: "Couldn't find any users!",
+			});
+			return;
+		}
 
 		const messageId = interaction.options.get("message", true)
 			.value as string;
@@ -212,9 +226,15 @@ client.on(Events.MessageCreate, async message => {
 	if (message.author.bot) return;
 	// Only show messages from DMs
 	if (message.channel.type !== ChannelType.DM) return;
+
 	// Only forward messages if a channel has been set
 	if (!forwardChannel) return;
-	const channel = client.channels.cache.get(forwardChannel);
+	let channel;
+	try {
+		channel = await client.channels.fetch(forwardChannel);
+	} catch (error) {
+		return;
+	}
 	if (!channel) return;
 	if (!channel.isTextBased()) return;
 
