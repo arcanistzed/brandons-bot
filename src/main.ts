@@ -84,7 +84,21 @@ client.on(Events.InteractionCreate, async interaction => {
 		const messageId = interaction.options.get("message", true)
 			.value as string;
 
-		const source = await interaction.channel?.messages.fetch(messageId);
+		// fetch the message from any channel
+		const source = await client.channels.cache.reduce(
+			async (prev, channel) => {
+				if (await prev) return prev;
+				if (!channel.isTextBased()) return prev;
+
+				try {
+					return await channel.messages.fetch(messageId);
+				} catch (error) {
+					return prev;
+				}
+			},
+			Promise.resolve<Message | undefined>(undefined),
+		);
+
 		if (!source) {
 			await interaction.reply({
 				ephemeral: true,
