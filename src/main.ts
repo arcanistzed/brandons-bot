@@ -137,22 +137,18 @@ client.on(Events.InteractionCreate, async interaction => {
 			});
 		}
 
-		try {
-			await interaction.editReply({
-				content: `Sent message ${source.id} to ${
-					users.length
-				} users (${users.map(u => u.username).join(", ")}): \`\`\`${
-					source.content
-				}\`\`\``,
-			});
-		} catch (error) {
-			console.error(error);
-		}
+		await interaction.editReply({
+			content: `Sent message ${source.id} to ${
+				users.length
+			} users (${users.map(u => u.username).join(", ")}): \`\`\`${
+				source.content
+			}\`\`\``,
+		});
 
 		console.info(
-			`Sent message ${source.id} to ${users.length} users: ${users
+			`Sent message ${source.id} to ${users.length} users (${users
 				.map(u => u.username)
-				.join(", ")}`,
+				.join(", ")}): ${source.content}`,
 		);
 	} else if (interaction.commandName === "forward") {
 		// Defer the reply so that the bot doesn't time out
