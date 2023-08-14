@@ -132,10 +132,14 @@ client.on(Events.InteractionCreate, async interaction => {
 			});
 		}
 
-		await interaction.reply({
-			ephemeral: true,
-			content: `Sent message to ${users.length} users: \`\`\`${source.content}\`\`\``,
-		});
+		try {
+			await interaction.reply({
+				ephemeral: true,
+				content: `Sent message to ${users.length} users: \`\`\`${source.content}\`\`\``,
+			});
+		} catch (error) {
+			console.error(error);
+		}
 
 		console.info(
 			`Sent message ${source.id} to ${users.length} users: ${users
