@@ -68,6 +68,13 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isCommand()) return;
 
 	if (interaction.commandName === "sync") {
+		// Defer the reply so that the bot doesn't time out
+		if (!interaction.deferred) {
+			await interaction.deferReply({
+				ephemeral: true,
+			});
+		}
+
 		// Split the users option string into an array of user IDs
 		const users = (
 			interaction.options
@@ -88,8 +95,7 @@ client.on(Events.InteractionCreate, async interaction => {
 			.filter((u): u is User => !!u);
 
 		if (users.length === 0) {
-			await interaction.reply({
-				ephemeral: true,
+			await interaction.editReply({
 				content: "Couldn't find any users!",
 			});
 			return;
@@ -114,8 +120,7 @@ client.on(Events.InteractionCreate, async interaction => {
 		);
 
 		if (!source) {
-			await interaction.reply({
-				ephemeral: true,
+			await interaction.editReply({
 				content: "Couldn't find that message!",
 			});
 			return;
@@ -133,9 +138,12 @@ client.on(Events.InteractionCreate, async interaction => {
 		}
 
 		try {
-			await interaction.reply({
-				ephemeral: true,
-				content: `Sent message to ${users.length} users: \`\`\`${source.content}\`\`\``,
+			await interaction.editReply({
+				content: `Sent message ${source.id} to ${
+					users.length
+				} users (${users.map(u => u.username).join(", ")}): \`\`\`${
+					source.content
+				}\`\`\``,
 			});
 		} catch (error) {
 			console.error(error);
@@ -147,26 +155,30 @@ client.on(Events.InteractionCreate, async interaction => {
 				.join(", ")}`,
 		);
 	} else if (interaction.commandName === "forward") {
+		// Defer the reply so that the bot doesn't time out
+		if (!interaction.deferred) {
+			await interaction.deferReply({
+				ephemeral: true,
+			});
+		}
+
 		const channel = interaction.options.get("channel", true).channel;
 		if (!channel) {
-			await interaction.reply({
-				ephemeral: true,
+			await interaction.editReply({
 				content: "Couldn't find that channel!",
 			});
 			return;
 		}
 
 		if (channel?.type !== ChannelType.GuildText) {
-			await interaction.reply({
-				ephemeral: true,
+			await interaction.editReply({
 				content: "That channel isn't a text channel!",
 			});
 			return;
 		}
 
 		forwardChannel = channel.id;
-		await interaction.reply({
-			ephemeral: true,
+		await interaction.editReply({
 			content: `Forwarding messages to ${channel.toString()}`,
 		});
 
