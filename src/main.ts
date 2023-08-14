@@ -70,9 +70,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (interaction.commandName === "sync") {
 		// Defer the reply so that the bot doesn't time out
 		if (!interaction.deferred) {
-			await interaction.deferReply({
-				ephemeral: true,
-			});
+			await interaction.deferReply();
 		}
 
 		// Split the users option string into an array of user IDs
@@ -153,9 +151,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	} else if (interaction.commandName === "forward") {
 		// Defer the reply so that the bot doesn't time out
 		if (!interaction.deferred) {
-			await interaction.deferReply({
-				ephemeral: true,
-			});
+			await interaction.deferReply();
 		}
 
 		const channel = interaction.options.get("channel", true).channel;
