@@ -239,7 +239,7 @@ client.on(Events.MessageCreate, async message => {
 	if (!channel.isTextBased()) return;
 
 	await channel.send({
-		content: `*From ${message.author.username} at ${message.createdAt}:*\n${message.content}`,
+		content: `*From ${message.author.username}:*\n${message.content}`,
 		files: message.attachments.map(a => ({
 			name: a.name,
 			attachment: a.url,
