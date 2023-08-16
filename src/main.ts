@@ -125,14 +125,18 @@ client.on(Events.InteractionCreate, async interaction => {
 		}
 
 		// Send the message to each user
+		const notSynced = [];
 		for (const user of users) {
-			const dmChannel = await user.createDM();
-			const sent = await dmChannel.send(source.content);
-
-			synced.push({
-				source,
-				sent,
-			});
+			try {
+				const dmChannel = await user.createDM();
+				const sent = await dmChannel.send(source.content);
+				synced.push({
+					source,
+					sent,
+				});
+			} catch (error) {
+				notSynced.push(user);
+			}
 		}
 
 		await interaction.editReply({
@@ -140,7 +144,13 @@ client.on(Events.InteractionCreate, async interaction => {
 				users.length
 			} users (${users.map(u => u.username).join(", ")}): \`\`\`${
 				source.content
-			}\`\`\``,
+			}\`\`\`${
+				notSynced.length > 0
+					? `\nCouldn't send to ${notSynced.length} users: ${notSynced
+							.map(u => u.username)
+							.join(", ")}`
+					: ""
+			}`,
 		});
 
 		console.info(
